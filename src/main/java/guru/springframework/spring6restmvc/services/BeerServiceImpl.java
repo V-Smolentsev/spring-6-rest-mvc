@@ -4,6 +4,7 @@ import guru.springframework.spring6restmvc.model.Beer;
 import guru.springframework.spring6restmvc.model.BeerStyle;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,7 +17,7 @@ import java.util.*;
 @Service
 public class BeerServiceImpl implements BeerService {
 
-    private Map<UUID, Beer> beerMap;
+    private final Map<UUID, Beer> beerMap;
 
     public BeerServiceImpl() {
         this.beerMap = new HashMap<>();
@@ -73,5 +74,67 @@ public class BeerServiceImpl implements BeerService {
         log.debug("Get Beer by Id - in service. Id: " + id.toString());
 
         return beerMap.get(id);
+    }
+
+    @Override
+    public Beer saveNewBeer(Beer beer) {
+        Beer newBeer = Beer.builder()
+                .id(UUID.randomUUID())
+                .createdDate(LocalDateTime.now())
+                .updateDate(LocalDateTime.now())
+                .beerName(beer.getBeerName())
+                .upc(beer.getUpc())
+                .version(beer.getVersion())
+                .beerStyle(beer.getBeerStyle())
+                .build();
+        beerMap.put(newBeer.getId(), newBeer);
+        return newBeer;
+    }
+
+    @Override
+    public Beer update(UUID beerId, Beer beer) {
+        Beer newBeer = Beer.builder()
+                .id(beerId)
+                .createdDate(LocalDateTime.now())
+                .updateDate(LocalDateTime.now())
+                .beerName(beer.getBeerName())
+                .upc(beer.getUpc())
+                .version(beer.getVersion())
+                .beerStyle(beer.getBeerStyle())
+                .build();
+        beerMap.put(newBeer.getId(), newBeer);
+        return newBeer;
+    }
+
+    @Override
+    public boolean deleteBeer(UUID beerId) {
+        return beerMap.remove(beerId) != null;
+    }
+
+    @Override
+    public boolean patchById(UUID beerId, Beer beer) {
+        Beer savedBeer = beerMap.get(beerId);
+        if (savedBeer == null) {
+            return false;
+        }
+        if (StringUtils.hasText(beer.getBeerName())) {
+            savedBeer.setBeerName(beer.getBeerName());
+        }
+        if (beer.getBeerStyle() != null) {
+            savedBeer.setBeerStyle(beer.getBeerStyle());
+        }
+        if (StringUtils.hasText(beer.getUpc())) {
+            savedBeer.setUpc(beer.getUpc());
+        }
+        if (beer.getVersion() != null) {
+            savedBeer.setVersion(beer.getVersion());
+        }
+        if (beer.getQuantityOnHand() != null) {
+            savedBeer.setQuantityOnHand(beer.getQuantityOnHand());
+        }
+        if (beer.getPrice() != null) {
+            savedBeer.setPrice(beer.getPrice());
+        }
+        return true;
     }
 }
