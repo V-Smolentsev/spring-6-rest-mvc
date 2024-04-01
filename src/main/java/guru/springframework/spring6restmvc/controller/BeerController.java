@@ -3,6 +3,7 @@ package guru.springframework.spring6restmvc.controller;
 import guru.springframework.spring6restmvc.model.Beer;
 import guru.springframework.spring6restmvc.services.BeerService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,7 @@ import java.util.UUID;
  * Created by jt, Spring Framework Guru.
  */
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/beer")
 public class BeerController {
@@ -26,14 +27,8 @@ public class BeerController {
     public ResponseEntity<Void> updateById(@PathVariable("beerId") UUID beerId, @RequestBody Beer beer) {
         HttpStatus httpStatus = null;
         HttpHeaders headers = new HttpHeaders();
-        if (beerService.getBeerById(beerId) != null) {
-            beerService.update(beerId, beer);
-            httpStatus = HttpStatus.OK;
-        } else {
-            Beer savedBeer = beerService.saveNewBeer(beer);
-            headers.add("Location", "/api/v1/beer/" + savedBeer.getId().toString());
-            httpStatus = HttpStatus.CREATED;
-        }
+        beerService.update(beerId, beer);
+        httpStatus = HttpStatus.OK;
         return new ResponseEntity<>(headers, httpStatus);
     }
 
@@ -62,13 +57,13 @@ public class BeerController {
     @DeleteMapping(path = "{beerId}")
     public ResponseEntity<Void> deleteById(@PathVariable("beerId") UUID beerId) {
         boolean isExisted = beerService.deleteBeer(beerId);
-        return new ResponseEntity<>(isExisted ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping("{beerId}")
     public ResponseEntity<Void> patchBeerById(@PathVariable("beerId") UUID beerId, @RequestBody Beer beer) {
         boolean isPatched = beerService.patchById(beerId, beer);
-        return new ResponseEntity<>(isPatched ? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

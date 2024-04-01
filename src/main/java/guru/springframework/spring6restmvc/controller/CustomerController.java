@@ -50,12 +50,12 @@ public class CustomerController {
     @DeleteMapping("{customerId}")
     public ResponseEntity<Void> deleteById(@PathVariable("customerId") UUID customerId) {
         boolean isExisted = customerService.deleteById(customerId);
-        return new ResponseEntity<>(isExisted ? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping("{customerId}")
     public ResponseEntity<Void> patchById(@PathVariable("customerId") UUID customerId, @RequestBody Customer body) {
         boolean isExisted = customerService.patchById(customerId, body);
-        return new ResponseEntity<>(isExisted ? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
